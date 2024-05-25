@@ -1,0 +1,39 @@
+# CalibPointsH3image.xlsx provides the coordinates for the image captured by H3
+
+# CalibPointsW3image.xlsx provides the coordinates for the image captured by W3
+
+# Each xlsx file has seven columns as X, Y, Z, u, v, u', v'
+
+	# (X, Y, Z) are the 3D coordinate of the corner in world refrence frame (you do not need them for the distortion)
+	# (u, v) is the 2D coordinate of the corner in the distorted image (this is indeed (xd, yd))
+	# (u',v') is the 2D coordinate of the corner in the undistorted image (this is indeed (xu, yu))
+
+
+# The xlsx coordinates can also be computed by Get3d2dCoordniates.py file. The parameter settings can be found the provided json file.
+
+# FYI: In the json file.
+	#  square_size is the size of chessboard squares in cm
+	#  rows is the number of rows in the chessboard pattern
+	#  column is the number of columns in the chessboard pattern 
+	#  left_offset is the distance from the first column of corners in the left plane to the centeral axis 
+	#  right_offset is the distance from the first column of corners in the right plane to the centeral axis
+	#  left_offset and right_offset are in cm
+		#  These parameters are used to generate the 3D corner coordinates (X, Y, Z) in the world refrence frame, which is necessary for the calibration step
+	#  H3_pixel_size_x and H3_pixel_size_y show the pixel size in cm for H3 camera
+	#  W3_pixel_size_x, W3_pixel_size_y show the pixel size in cm for W3 camera
+
+
+# Note: FOR THE DISTORTION (Phase-1)
+# You need to work on (u, v) coordinates and compute the undistorted coordinates close to (u', v')
+# We have provided (u', v') coordinates as references. You only need to work on (u, v) coordinates for RANSAC and computing the best Kappa
+# To load (u,v) coordinates, you can read from xlsx files OR use Get3d2dCoordniates.py with the parameters provided in the JSON file
+# In utilities.py there is a function named NearestNeighbourInterpolation, which could be used once you compute the kappa value. 
+  This function implements the warping step that you need to apply kappa on the whole image
+
+
+# Note: FOR THE CALIBRATION (Phase-2)
+  You also have access all the data needed for the calibration in the current zip file. 
+  The input image for the calibration step MUST be the output of the distortion phase (the undistorted image)
+
+
+

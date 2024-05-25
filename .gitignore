@@ -1,0 +1,6 @@
+venv/
+__pycache__
+/.vs
+/Python3.9For773Env
+/Python3.9Env
+.venv
