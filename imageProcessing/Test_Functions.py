@@ -13,27 +13,61 @@ def main():
     z = 0
 
 
-    question = 9
+    question = 3
 
+    if (question == 1): # cross product
+        v1 = [1, 3, 5]
+        v2 = [5, 4, 8]
 
-    if (question == 1): # Z min and Z max from baseline
-        x = calculate_stereo_parameter_Zmin(50,2,1000,0.001, 200 ,False) # baseline, focal_length, num_pixels, pixel_width, Zmin, is_Zmax
+        x = v1[1] * v2[2] - v1[2] * v2[1]
+        y = v1[2] * v2[0] - v1[0] * v2[2]
+        z = v1[0] * v2[1] - v1[1] * v2[0]
 
-    elif (question == 2): # baseline from transforms
+    elif (question == 2): # M-1 2D affine transform Q3
+        theta = 30
+        translation = [8, 2]
+        x = affine_transformation_inverse(theta, translation)
+
+    elif (question == 3): # Z min and Z max from baseline Quiz1
+        baseline = 35
+        focal_length = 1.5
+        num_pixels = 1 # 1 for Zmax, max pixels for Zmin
+        pixel_width = 0.002
+        x = (baseline * focal_length) / (num_pixels * pixel_width)
+        if (baseline == None):
+            y = baseline = (Zmin * num_pixels * pixel_width) / focal_length
+
+    elif (question == 4): # baseline from transforms
         x1,y1,z1,x2,y2,z2 = -5,2,54,5,9,10
-        x = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2) #p1_vector, p2_vector
+        x = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
     
-    elif (question == 3): # camera pixel to scene, scene to cam pixel
-        x,y,z = calculate_scene_coordinates(1,(0,0),(131,142),1,0.001,None) # (f, optical_center, pixel, Z, pixel_size, scene_pixel):
+    elif (question == 6): # Z = 0, image pixel to 3d scene location, with P array Q5
+        P = np.array([
+        [0.7547, 0, 0.6561, 13.0],
+        [0, 1, 0, 12.0],
+        [-0.6561, 1, 0.7547, 76],
+        [0, 0, 0, 1]])
+        u, v = 337, 134
+        f = 7
+        cx, cy = 113, 195
+        dx, dy = 0.001, 0.001
+        sx = 1
+        x,y,z = compute_3d_location(P, u, v, f, cx, cy, dx, dy, sx) 
     
-    elif (question == 4): # SSD then SAD
+    elif (question == 7): # intersection of a point on plane
+        ray_origin = [0, 1, -1]
+        ray_direction = [1, 1, 1]
+        plane_equation = [1, 1, 1, 2] # x y z = _
+        x,y,z = intersection_point(ray_origin, ray_direction, plane_equation)
+
+    elif (question == 8): # SSD then SAD
         template = [[11, 3, 6],
                     [9, 11, 4],
                     [11, 8, 6]]
 
         window = [[2, 6, 6],
-                  [9, 12, 11],
-                  [8, 4, 2]]
+                    [9, 12, 11],
+                    [8, 4, 2]]
 
         template = np.array(template)
         window = np.array(window)
@@ -42,36 +76,37 @@ def main():
 
         x,y = ssd, sad
     
-    elif (question == 5): # cross product
-        v1 = [-3, -1, -9]
-        v2 = [3, -4, -4]
-
-        x = v1[1] * v2[2] - v1[2] * v2[1]
-        y = v1[2] * v2[0] - v1[0] * v2[2]
-        z = v1[0] * v2[1] - v1[1] * v2[0]
+    elif (question == 9): # max kappa for delta Q7
+        x = calculate_kappa1_max(8,6,4000,3000,1,'mm') # sensor_width_mm, sensor_height_mm, image_x, image_y, delta, units='p'or'mm'
     
-    elif (question == 6): # placeholder
-        pass
+    elif (question == 10): # disparity (Z delta) from baseline Q15
+        disparity = 50
+        baseline = 75
+        focal_length = 3
+        num_pixels = 1000
+        pixel_width = 0.001
+        x = calculate_delta_Z_minus(disparity, baseline, focal_length, num_pixels, pixel_width)
     
-    elif (question == 7): # intersection of a point on plane
-        ray_origin = [1, 1, 1]
-        ray_direction = [2, 1, -1]
-        plane_equation = [1, 2, 4, 7]
-        x,y,z = intersection_point(ray_origin, ray_direction, plane_equation)
+    elif (question == 11): # 3D scene to image with 3D point P Q8
+        P = [31, -4, 447]
+        f = 3
+        cx = 178
+        cy = 195
+        dx = 0.001
+        dy = 0.001
+        x,y = project_3d_to_image(P, f, cx, cy, dx, dy)
     
-    elif (question == 8): # max kappa and rd
-        x,y = compute_kappa1_max(4000,3000,8,6,(8/4000),False) # image_width, image_height, sensor_width, sensor_height, pixel_width (sensorW/imageW), pixel mode
+    elif (question == 12): # computer undistorted pixel coordinates with given k Q9/12
+        x_d = 0
+        y_d = 1875
+        k_m = -1.2 * 10**-3
+        sensor_width = 5.0
+        sensor_height = 3.75
+        width_pixels = 5000
+        height_pixels = 3750
+        x,y = calculate_undistorted_pixel_coordinates(x_d, y_d, k_m, sensor_width, sensor_height, width_pixels, height_pixels)
     
-    elif (question == 9): # disparity (Z delta) from baseline
-        x = calculate_delta_Z_minus(200,50,2,1000,0.001) # disparity, baseline, focal_length, num_pixels, pixel_width
-    
-    elif (question == 10):
-        pass
-    
-    elif (question == 11):
-        pass
-    
-    elif (question == 12):
+    elif (question == 13):
         pass
     
     elif (question == 13):
@@ -83,20 +118,6 @@ def main():
     elif (question == 15):
         pass
     
-    elif (question == 16):
-        pass
-    
-    elif (question == 17):
-        pass
-    
-    elif (question == 18):
-        pass
-    
-    elif (question == 19):
-        pass
-    
-    elif (question == 20):
-        pass
     
     print(x)
     print(y)
@@ -130,52 +151,27 @@ def calculate_stereo_parameter_Zmin(baseline=None, focal_length=None, num_pixels
         pixel_width = (focal_length * baseline) / (Z * disparity)
         return round(pixel_width, 6)
 
-def calculate_scene_coordinates(f=None, optical_center=None, pixel=None, Z=None, pixel_size=None, scene_pixel=None):
-    if optical_center is None:
-        u, v = pixel
-        u0 = u - (pixel[0] * f) / Z
-        v0 = v - (pixel[1] * f) / Z
-        return [u0, v0, 0]
+def compute_3d_location(P, u, v, f, cx, cy, dx, dy, sx):
+    u_c = sx * dx * (u - cx)
+    v_c = dy * (cy - v)
+    normalized_coords = np.array([u_c, v_c, f, 1])
+    R = P[:3, :3]
+    T = P[:3, 3]
+    R_inv = R.T
+    T_inv = -R_inv @ T
+    P_inv = np.eye(4)
+    P_inv[:3, :3] = R_inv
+    P_inv[:3, 3] = T_inv
+    O_cw = P_inv @ np.array([0, 0, 0, 1])
+    X_cw_O, Y_cw_O, Z_cw_O, _ = O_cw
+    MI_W = P_inv @ normalized_coords
+    X_cw, Y_cw, Z_cw, _ = MI_W
+    t = -Z_cw_O / (Z_cw - Z_cw_O)
+    X_wI = X_cw_O + t * (X_cw - X_cw_O)
+    Y_wI = Y_cw_O + t * (Y_cw - Y_cw_O)
+    Z_wI = 0
 
-    if pixel is None:
-        u0, v0 = optical_center
-        u = (f * pixel_size * pixel[0] + u0 * Z) / f
-        v = (f * pixel_size * pixel[1] + v0 * Z) / f
-        return [u, v, 0]
-
-    if Z is None:
-        u0, v0 = optical_center
-        u, v = pixel
-        x = (u - u0) * pixel_size
-        y = (v - v0) * pixel_size
-        Z = (f * max(abs(x), abs(y))) / pixel_size
-        return 0,0,Z
-
-    if pixel_size is None:
-        u0, v0 = optical_center
-        u, v = pixel
-        x = (u - u0) * pixel_size
-        y = (v - v0) * pixel_size
-        pixel_size = (f * max(abs(x), abs(y))) / Z
-        return pixel_size,0,0
-
-    if scene_pixel is None:
-        u0, v0 = optical_center
-        u, v = pixel
-        x = (u - u0) * pixel_size
-        y = (v - v0) * pixel_size
-        X = (x * Z) / f
-        Y = (y * Z) / f
-        return [X, -Y, Z]
-
-    if scene_pixel is not None:
-        u0, v0 = optical_center
-        X, Y, Z = scene_pixel
-        u = (f * X / Z) / pixel_size + u0
-        v = (f * (-Y) / Z) / pixel_size + v0 
-        return [u, v, 0]
-
-    return 0,0,0
+    return np.round([X_wI, Y_wI, Z_wI], 2)
 
 def intersection_point(ray_origin, ray_direction, plane_equation):
     A, B, C, D = plane_equation
@@ -193,16 +189,23 @@ def intersection_point(ray_origin, ray_direction, plane_equation):
 
     return intersection_point
 
-def compute_kappa1_max(image_width, image_height, sensor_width, sensor_height, pixel_width, pixel_k = False):
-    center_x = sensor_width / 2
-    center_y = sensor_height / 2
-    distance = np.sqrt((center_x ** 2) + (center_y ** 2))
+def calculate_kappa1_max(sensor_width_mm, sensor_height_mm, image_x, image_y, delta, units='p'):
+    cx = image_x / 2
+    cy = image_y / 2
     
-    kappa1_max = (pixel_width / (distance ** 3))
-
-    if (pixel_k): kappa1_max = kappa1_max * (pixel_width ** 2)
+    pixel_size_x = sensor_width_mm / image_x
+    pixel_size_y = sensor_height_mm / image_y
+    pixel_size = (pixel_size_x + pixel_size_y) / 2
     
-    return kappa1_max, (pixel_width / (distance ** 3))
+    rd = ((image_x - cx)**2 + (image_y - cy)**2)**0.5
+    
+    kappa1_p = delta / (rd**3)
+    
+    if units == 'p':
+        return kappa1_p
+    elif units == 'mm':
+        kappa1_m = kappa1_p * (pixel_size**2)
+        return kappa1_m
 
 def calculate_delta_Z_minus(disparity, baseline_length, focal_length, num_pixels_per_line, pixel_width):
     
@@ -213,6 +216,51 @@ def calculate_delta_Z_minus(disparity, baseline_length, focal_length, num_pixels
     
     return round(delta_Z_minus, 2)
 
+def affine_transformation_inverse(theta_degrees, translation):
+    theta_radians = np.radians(theta_degrees)
+    cos_theta = np.cos(theta_radians)
+    sin_theta = np.sin(theta_radians)
+
+    R = np.array([[cos_theta, -sin_theta],
+                  [sin_theta, cos_theta]])
+
+    T = np.array(translation).reshape(2, 1)
+
+    R_inv = R.T
+    T_inv = -R_inv @ T
+
+    M_inv = np.eye(3)
+    M_inv[:2, :2] = R_inv
+    M_inv[:2, 2] = T_inv.flatten()
+
+    return np.round(M_inv, 1)
+
+def project_3d_to_image(P, f, cx, cy, dx, dy):
+    X, Y, Z = P
+
+    u_t = (f * X) / Z
+    v_t = (f * Y) / Z
+
+    u = (u_t / dx) + cx
+    v = (-v_t / dy) + cy # remove negative sign for pointing down
+    
+    return round(u, 2), round(v, 2)
+
+def calculate_undistorted_pixel_coordinates(x_d, y_d, k_m, sensor_width, sensor_height, width_pixels, height_pixels):
+    cx = width_pixels / 2
+    cy = height_pixels / 2
+    
+    pixel_size_x = sensor_width / width_pixels
+    pixel_size_y = sensor_height / height_pixels
+    pixel_size = (pixel_size_x + pixel_size_y) / 2
+    
+    k_p = k_m * (pixel_size ** 2)
+    dist = (1 + (k_p * (x_d - cx)**2 + (y_d - cy)**2))
+
+    x_u = ((x_d - cx) * dist) + cx
+    y_u = ((y_d - cy) * dist) + cy
+    
+    return round(x_u), round(y_u)
 
 if __name__ == "__main__":
     main()
